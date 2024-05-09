@@ -41,8 +41,8 @@ private:
     void toggleParity();
     unsigned int numQubits;
     unsigned long long int numStates;
-    qubitLayer *qEven_;
-    qubitLayer *qOdd_;
+    qubitLayer *_qEven;
+    qubitLayer *_qOdd;
     bool parity = true;
 };
 
