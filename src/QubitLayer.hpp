@@ -39,11 +39,12 @@ private:
     bool checkZeroState(int qubit);
     void updateLayer();
     void toggleParity();
-    unsigned int numQubits;
-    unsigned long long int numStates;
+    unsigned int _numQubits;
+    unsigned long long int _numStates;
+    bool _parity = true;
+    unsigned int _execTime;
     qubitLayer *_qEven;
     qubitLayer *_qOdd;
-    bool parity = true;
 };
 
 #endif
