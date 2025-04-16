@@ -16,5 +16,8 @@ experiments.py
 figs/
 *.eps
 
-# transfer script
-transfer
+# object files
+*.o
+
+# executable
+main
