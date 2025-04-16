@@ -25,7 +25,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install libomp
-      run: brew install libomp
+      run: |
+        brew install libomp
+        export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
+        export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
     - name: make check
       run: make check
     - name: make
