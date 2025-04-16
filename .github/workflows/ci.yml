@@ -2,13 +2,23 @@ name: QuantumSim CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build-ubuntu:
     runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: make check
+        run: make check
+      - name: make
+        run: make
+
+  build-macos-no-openmp:
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -24,16 +34,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: install libomp
         run: brew install libomp
-      - name: make check
-        run: make check
-      - name: make
-        run: make
-
-  build-macos-no-openmp:
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v2
+      - name: Set environment variables for libomp
+        run: |
+          export LDFLAGS="-L$(brew --prefix libomp)/lib"
+          export CPPFLAGS="-I$(brew --prefix libomp)/include"
       - name: make check
         run: make check
       - name: make
