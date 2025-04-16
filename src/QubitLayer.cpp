@@ -18,6 +18,7 @@ QubitLayer::QubitLayer(unsigned int numQubits, qubitLayer *qL)
         for (unsigned int row = 0; row < _numStates; row++)
             _qEven[row] = qL[row];
     else
+        // the default state is |000...0>
         _qEven[0] = {1, 0};
 }
 
