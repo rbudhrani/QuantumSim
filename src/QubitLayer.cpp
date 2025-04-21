@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <omp.h>
 #include "QubitLayer.hpp"
 
 QubitLayer::QubitLayer(unsigned int numQubits, qubitLayer *qL)
@@ -98,25 +99,17 @@ void QubitLayer::applyHadamard(int target)
                 parity ? qOdd_[i] -= hadamardCoef * qEven_[i] : qEven_[i] -= hadamardCoef * qOdd_[i];
             else
                 parity ? qOdd_[i] += hadamardCoef * qEven_[i] : qEven_[i] += hadamardCoef * qOdd_[i];
-            if (!isParallel)
-            {
-                state.flip(target);
-                parity ? qOdd_[state.to_ulong()] += hadamardCoef * qEven_[i] : qEven_[state.to_ulong()] += hadamardCoef * qOdd_[i];
-            }
         }
-    if (isParallel)
-    {
 #pragma omp barrier
 // map |0> to hadamardCoef*|1> and |1> to hadamardCoef*|0>
 #pragma omp parallel for shared(qOdd_, qEven_)
-        for (unsigned long long int i = 0; i < numStates; i++)
-            if (checkZeroState(i))
-            {
-                std::bitset<maxQubits> state = i;
-                state.flip(target);
-                parity ? qOdd_[state.to_ulong()] += hadamardCoef * qEven_[i] : qEven_[state.to_ulong()] += hadamardCoef * qOdd_[i];
-            }
-    }
+    for (unsigned long long int i = 0; i < numStates; i++)
+        if (checkZeroState(i))
+        {
+            std::bitset<maxQubits> state = i;
+            state.flip(target);
+            parity ? qOdd_[state.to_ulong()] += hadamardCoef * qEven_[i] : qEven_[state.to_ulong()] += hadamardCoef * qOdd_[i];
+        }
     updateLayer();
 }
 
