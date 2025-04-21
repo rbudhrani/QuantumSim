@@ -7,7 +7,7 @@ CXX = g++
 # set linker flag for OpenMP based on OS
 ifeq ($(OS_NAME), darwin)
 OPENMP_LINKER_FLAG = -lomp
-OPENMP_FLAGS = -Xpreprocessor -fopenmp
+OPENMP_FLAGS = -Xclang -fopenmp
 endif
 ifeq ($(OS_NAME), linux)
 OPENMP_LINKER_FLAG = -lgomp
@@ -94,12 +94,12 @@ $(TARGET): $(TARGET).o $(QUBITLAYER).o $(EXAMPLES).o
 
 $(TARGET).o: $(TARGET).cpp $(TARGET_DEPS) $(QLAYER_DEPS)
 	@printf "%b" "$(BLUE)$(COM_STRING) $(NO_COLOR)$(@)                             				"
-	@$(CXX) $(CXXFLAGS) -c $(TARGET).cpp -o $(TARGET).o
+	@$(CXX) $(CXXFLAGS) $(OPENMP_FLAGS) -c $(TARGET).cpp -o $(TARGET).o
 	@printf "%b" "$(GREEN)$(OK_STRING)$(NO_COLOR)\n"
 
 $(QUBITLAYER).o: $(QUBITLAYER).cpp $(TARGET_DEPS) $(QLAYER_DEPS)
 	@printf "%b" "$(BLUE)$(COM_STRING) $(NO_COLOR)$(@)                       				"
-	@$(CXX) $(CXXFLAGS) -c $(QUBITLAYER).cpp -o $(QUBITLAYER).o
+	@$(CXX) $(CXXFLAGS) $(OPENMP_FLAGS) -c $(QUBITLAYER).cpp -o $(QUBITLAYER).o
 	@printf "%b" "$(GREEN)$(OK_STRING)$(NO_COLOR)\n"
 
 $(EXAMPLES).o: $(EXAMPLES).cpp $(TARGET_DEPS) $(QLAYER_DEPS) $(EXAMPLES_DEPS)
