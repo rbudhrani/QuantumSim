@@ -34,12 +34,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: install libomp
+      - name: Install OpenMP
         run: brew install libomp
       - name: Set environment variables for libomp
         run: |
           export LDFLAGS="-L$(brew --prefix libomp)/lib"
           export CPPFLAGS="-I$(brew --prefix libomp)/include"
+          echo "LDFLAGS=$LDFLAGS" >> $GITHUB_ENV
+          echo "CPPFLAGS=$CPPFLAGS" >> $GITHUB_ENV
       - name: make check
         run: make check
       - name: make
