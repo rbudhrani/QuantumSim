@@ -2,38 +2,46 @@ name: QuantumSim CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build-ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04, ubuntu-22.04]
 
     steps:
       - uses: actions/checkout@v2
+      - name: Install OpenMP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libomp-dev
       - name: make check
         run: make check
       - name: make
         run: make
 
   build-macos:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, macos-15, macos-14, macos-13, macos-12, macos-11]
 
     steps:
       - uses: actions/checkout@v2
-      - name: install libomp
+      - name: Install OpenMP
         run: brew install libomp
-      - name: make check
-        run: make check
-      - name: make
-        run: make
-
-  build-macos-no-openmp:
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v2
+      - name: Set environment variables for libomp
+        run: |
+          export LDFLAGS="-L$(brew --prefix libomp)/lib"
+          export CPPFLAGS="-I$(brew --prefix libomp)/include"
+          echo "LDFLAGS=$LDFLAGS" >> $GITHUB_ENV
+          echo "CPPFLAGS=$CPPFLAGS" >> $GITHUB_ENV
       - name: make check
         run: make check
       - name: make

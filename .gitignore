@@ -1,23 +1,10 @@
+.DS_STORE
+
 # vscode directory
 .vscode/
 
 # python cache
 __pycache__/
-
-.DS_STORE
-
-# data
-data/
-
-# plotting script
-experiments.py
-
-# images, figures etc.
-figs/
-*.eps
-
-# transfer script
-transfer
 
 # object files
 *.o

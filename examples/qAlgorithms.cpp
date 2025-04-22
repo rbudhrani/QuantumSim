@@ -5,7 +5,7 @@ QubitLayer grover(unsigned int numQubits, int unsigned dSolution, int unsigned n
 {
     QubitLayer q(numQubits);
     unsigned long long int numStates = q.getNumStates();
-    if (dSolution > numQubits)
+    if (dSolution > numStates)
     {
         std::cout << "\033[31;31m[Error]\033[m" << std::endl;
         std::cout << "Number of states: " << numStates << std::endl;
