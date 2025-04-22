@@ -40,7 +40,6 @@ bool QubitLayer::checkZeroState(int qubit)
 
 void QubitLayer::applyPauliX(int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -53,7 +52,6 @@ void QubitLayer::applyPauliX(int target)
 
 void QubitLayer::applyPauliY(int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -72,7 +70,6 @@ void QubitLayer::applyPauliY(int target)
 
 void QubitLayer::applyPauliZ(int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -88,8 +85,7 @@ void QubitLayer::applyPauliZ(int target)
 
 void QubitLayer::applyHadamard(int target)
 {
-// map |1> to -hadamardCoef*|1> and |0> to hadamardCoef*|0>
-#pragma omp parallel for shared(qOdd_, qEven_)
+    // map |1> to -hadamardCoef*|1> and |0> to hadamardCoef*|0>
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -98,25 +94,9 @@ void QubitLayer::applyHadamard(int target)
                 parity ? qOdd_[i] -= hadamardCoef * qEven_[i] : qEven_[i] -= hadamardCoef * qOdd_[i];
             else
                 parity ? qOdd_[i] += hadamardCoef * qEven_[i] : qEven_[i] += hadamardCoef * qOdd_[i];
-            if (!isParallel)
-            {
-                state.flip(target);
-                parity ? qOdd_[state.to_ulong()] += hadamardCoef * qEven_[i] : qEven_[state.to_ulong()] += hadamardCoef * qOdd_[i];
-            }
+            state.flip(target);
+            parity ? qOdd_[state.to_ulong()] += hadamardCoef * qEven_[i] : qEven_[state.to_ulong()] += hadamardCoef * qOdd_[i];
         }
-    if (isParallel)
-    {
-#pragma omp barrier
-// map |0> to hadamardCoef*|1> and |1> to hadamardCoef*|0>
-#pragma omp parallel for shared(qOdd_, qEven_)
-        for (unsigned long long int i = 0; i < numStates; i++)
-            if (checkZeroState(i))
-            {
-                std::bitset<maxQubits> state = i;
-                state.flip(target);
-                parity ? qOdd_[state.to_ulong()] += hadamardCoef * qEven_[i] : qEven_[state.to_ulong()] += hadamardCoef * qOdd_[i];
-            }
-    }
     updateLayer();
 }
 
@@ -125,32 +105,15 @@ void QubitLayer::applyRx(int target, precision theta)
     // compute the sine and cosine of the rotation angle
     precision cosTheta = cos(theta / 2);
     precision sinTheta = sin(theta / 2);
-// map |0> to cosTheta*|0> and |1> to cosTheta*|1>
-#pragma omp parallel for shared(qOdd_, qEven_)
+    // map |0> to cosTheta*|0> and |1> to cosTheta*|1>
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
             parity ? qOdd_[i] += cosTheta * qEven_[i] : qEven_[i] += cosTheta * qOdd_[i];
-            if (!isParallel)
-            {
-                std::bitset<maxQubits> state = i;
-                state.flip(target);
-                parity ? qOdd_[state.to_ulong()] += -complexImg * sinTheta * qEven_[i] : qEven_[state.to_ulong()] += -complexImg * sinTheta * qOdd_[i];
-            }
+            std::bitset<maxQubits> state = i;
+            state.flip(target);
+            parity ? qOdd_[state.to_ulong()] += -complexImg * sinTheta * qEven_[i] : qEven_[state.to_ulong()] += -complexImg * sinTheta * qOdd_[i];
         }
-    if (isParallel)
-    {
-#pragma omp barrier
-// map |1> to -isinTheta*|0> and |0> to -isineTheta*|1>
-#pragma omp parallel for shared(qOdd_, qEven_)
-        for (unsigned long long int i = 0; i < numStates; i++)
-            if (checkZeroState(i))
-            {
-                std::bitset<maxQubits> state = i;
-                state.flip(target);
-                parity ? qOdd_[state.to_ulong()] += -complexImg * sinTheta * qEven_[i] : qEven_[state.to_ulong()] += -complexImg * sinTheta * qOdd_[i];
-            }
-    }
     updateLayer();
 }
 
@@ -159,42 +122,20 @@ void QubitLayer::applyRy(int target, precision theta)
     // compute the sine and cosine of the rotation angle
     precision cosTheta = cos(theta / 2);
     precision sinTheta = sin(theta / 2);
-// map |1> to cosTheta*|1> and |0> to cosTheta*|0>
-#pragma omp parallel for shared(qOdd_, qEven_)
+    // map |1> to cosTheta*|1> and |0> to cosTheta*|0>
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
             parity ? qOdd_[i] += cosTheta * qEven_[i] : qEven_[i] += cosTheta * qOdd_[i];
-            if (!isParallel)
-            {
-                std::bitset<maxQubits> state = i;
-                state.flip(target);
-                // action if bit is 1 (i.e. set)
-                if (state.test(target))
-                    parity ? qOdd_[state.to_ulong()] += sinTheta * qEven_[i] : qEven_[state.to_ulong()] += sinTheta * qOdd_[i];
-                // action if bit is 0 (i.e. not set)
-                else
-                    parity ? qOdd_[state.to_ulong()] -= sinTheta * qEven_[i] : qEven_[state.to_ulong()] -= sinTheta * qOdd_[i];
-            }
+            std::bitset<maxQubits> state = i;
+            state.flip(target);
+            // action if bit is 1 (i.e. set)
+            if (state.test(target))
+                parity ? qOdd_[state.to_ulong()] += sinTheta * qEven_[i] : qEven_[state.to_ulong()] += sinTheta * qOdd_[i];
+            // action if bit is 0 (i.e. not set)
+            else
+                parity ? qOdd_[state.to_ulong()] -= sinTheta * qEven_[i] : qEven_[state.to_ulong()] -= sinTheta * qOdd_[i];
         }
-    if (isParallel)
-    {
-#pragma omp barrier
-// map |0> to sinTheta*|1> and |1> to -sinTheta*|0>
-#pragma omp parallel for shared(qOdd_, qEven_)
-        for (unsigned long long int i = 0; i < numStates; i++)
-            if (checkZeroState(i))
-            {
-                std::bitset<maxQubits> state = i;
-                state.flip(target);
-                // action if bit is 1 (i.e. set)
-                if (state.test(target))
-                    parity ? qOdd_[state.to_ulong()] += sinTheta * qEven_[i] : qEven_[state.to_ulong()] += sinTheta * qOdd_[i];
-                // action if bit is 0 (i.e. not set)
-                else
-                    parity ? qOdd_[state.to_ulong()] -= sinTheta * qEven_[i] : qEven_[state.to_ulong()] -= sinTheta * qOdd_[i];
-            }
-    }
     updateLayer();
 }
 
@@ -203,7 +144,6 @@ void QubitLayer::applyRz(int target, precision theta)
     // compute the sine and cosine of the rotation angle
     precision cosTheta = cos(theta / 2);
     precision sinTheta = sin(theta / 2);
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -228,7 +168,6 @@ bool QubitLayer::checkControls(int *controls, int numControls, std::bitset<maxQu
 
 void QubitLayer::applyCnot(int control, int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
     {
         if (checkZeroState(i))
@@ -249,7 +188,6 @@ void QubitLayer::applyCnot(int control, int target)
 
 void QubitLayer::applyToffoli(int control1, int control2, int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -268,7 +206,6 @@ void QubitLayer::applyToffoli(int control1, int control2, int target)
 
 void QubitLayer::applyMcnot(int *controls, int numControls, int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -287,7 +224,6 @@ void QubitLayer::applyMcnot(int *controls, int numControls, int target)
 
 void QubitLayer::applyCz(int control, int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {
@@ -303,7 +239,6 @@ void QubitLayer::applyCz(int control, int target)
 
 void QubitLayer::applyMcphase(int *controls, int numControls, int target)
 {
-#pragma omp parallel for shared(qOdd_, qEven_)
     for (unsigned long long int i = 0; i < numStates; i++)
         if (checkZeroState(i))
         {

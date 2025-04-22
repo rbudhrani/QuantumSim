@@ -3,13 +3,13 @@
 ![Generic badge](https://img.shields.io/badge/Version-0.10-blue.svg)
 [![Generic badge](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-QuantumSim is a simulator for quantum computing.
+QuantumSim is a simulator for quantum circuits.
 
 ## Setting up
 
 Clone the repository
 ```zsh 
-git clone https://github.com/CaffeineMakesCode/QuantumSim
+git clone https://github.com/rbudhrani/QuantumSim
 ```
 
 Run the tests from the root folder
@@ -47,9 +47,9 @@ int main(){
     // create a QubitLayer object
     QubitLayer q;
     // apply a hadamard gate
-    q.hadamard(0);
+    q.applyHadamard(0);
     // apply cnot on the 2 qubits
-    q.cnot(0, 1);
+    q.applyCnot(0, 1);
     // print qubits
     q.printQubits();
 }
@@ -67,11 +67,11 @@ int main(){
     // create a QubitLayer object with 4 qubits
     QubitLayer q(4);
     // apply hadamard gates
-    q.hadamard(0);
-    q.hadamard(2);
+    q.applyHadamard(0);
+    q.applyHadamard(2);
     // apply cnot gates
-    q.cnot(0, 1);
-    q.cnot(2, 3);
+    q.applyCnot(0, 1);
+    q.applyCnot(2, 3);
     // print qubits
     q.printQubits();
 }

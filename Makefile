@@ -213,5 +213,5 @@ $(TESTS): $(TESTS).o $(QUBITLAYER).o
 
 $(TESTS).o: $(TESTS).cpp $(TARGET_DEPS) $(QLAYER_DEPS) $(TESTS_DEPS)
 	@printf "%b" "$(BLUE)$(COM_STRING) $(NO_COLOR)$(@)                             				"
-	@$(CXX) $(CXXFLAGS) $(OPENMP_FLAGS) -c $(TESTS).cpp -o $(TESTS).o
+	@$(CXX) $(CXXFLAGS) -c $(TESTS).cpp -o $(TESTS).o
 	@printf "%b" "$(GREEN)$(OK_STRING)\n"
