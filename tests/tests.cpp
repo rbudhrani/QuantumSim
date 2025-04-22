@@ -93,14 +93,6 @@ bool testGate(Gates gate)
 
 int main(int argc, char *argv[])
 {
-    for (int i = 0; i < argc; i++)
-        if (std::string(argv[i]) == "-p")
-        {
-            isParallel = true;
-            std::cout << "Testing parallel version of QuantumSim" << std::endl;
-        }
-    if (!isParallel)
-        std::cout << "Testing sequential version of QuantumSim" << std::endl;
     // define variable to store result of the tests
     bool testResult = true;
     std::cout << "\033[34;34m===========Test Results===========\033[m" << std::endl;
