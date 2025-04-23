@@ -18,7 +18,7 @@ cd <path-to-repository>/QuantumSim && make check
 ```
 ___
 ## Usage
-The `QubitLayer` class in `src/QubitLayer.cpp` defines the functions for the quantum gates and the arrays that store the amplitudes for the qubits. The table below lists the functions that can be used by a `QubitLayer` object. `precision` is a `typedef` for `double`. The supported gates are:
+The `QubitLayer` class in `src/QubitLayer.cpp` defines the methods for the quantum gates and the arrays that store the probability amplitudes for the qubits. The table below lists the methods that can be used by a `QubitLayer` object. `precision` is a `typedef` for `double`. The supported gates are:
 | Quantum Gate                  | Function                                                     |
 | ------------------------------|--------------------------------------------------------------|
 | Pauli X                       | `applyPauliX(int target)`                                    |
@@ -41,7 +41,6 @@ Running a quantum circuit is done by writing the circuit in `src/main.cpp`.
 #include <iostream>
 #include <complex>
 #include "QubitLayer.hpp"
-#include "qAlgorithms.hpp"
 
 int main(){
     // create a QubitLayer object
@@ -61,7 +60,6 @@ By default when a `QubitLayer` object is created, it is initialised with 2 qubit
 #include <iostream>
 #include <complex>
 #include "QubitLayer.hpp"
-#include "qAlgorithms.hpp"
 
 int main(){
     // create a QubitLayer object with 4 qubits
