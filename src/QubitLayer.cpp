@@ -7,15 +7,15 @@
 QubitLayer::QubitLayer(unsigned int numQubits, qubitLayer *qL)
 {
     // calculate the number of states
-    numStates = 1;
+    numStates_ = 1;
     for (unsigned int i = 0; i < numQubits; i++)
-        numStates *= 2;
+        numStates_ *= 2;
     // allocate memory for arrays
-    qEven_ = new qubitLayer[numStates];
-    qOdd_ = new qubitLayer[numStates];
+    qEven_ = new qubitLayer[numStates_];
+    qOdd_ = new qubitLayer[numStates_];
     // if input is provided then use that to fill the input qubit state
     if (!(qL == nullptr))
-        for (unsigned int row = 0; row < numStates; row++)
+        for (unsigned int row = 0; row < numStates_; row++)
             qEven_[row] = qL[row];
     else
         qEven_[0] = {1, 0};
@@ -29,21 +29,22 @@ QubitLayer::~QubitLayer()
 
 void QubitLayer::updateLayer()
 {
-    parity ? std::fill(qEven_, qEven_ + numStates, zeroComplex) : std::fill(qOdd_, qOdd_ + numStates, zeroComplex);
+    parity ? std::fill(qEven_, qEven_ + numStates_, zeroComplex) : std::fill(qOdd_, qOdd_ + numStates_, zeroComplex);
     toggleParity();
 }
 
-bool QubitLayer::checkZeroState(int qubit)
+bool QubitLayer::checkZeroState(unsigned long long int state)
 {
-    return parity ? qEven_[qubit].imag() || qEven_[qubit].real() : qOdd_[qubit].imag() || qOdd_[qubit].real();
+    return parity ? qEven_[state].imag() || qEven_[state].real() : qOdd_[state].imag() || qOdd_[state].real();
 }
 
 void QubitLayer::applyPauliX(int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
+            // flip the target qubit in the state
             state.flip(target);
             parity ? qOdd_[state.to_ulong()] = qEven_[i] : qEven_[state.to_ulong()] = qOdd_[i];
         }
@@ -52,7 +53,7 @@ void QubitLayer::applyPauliX(int target)
 
 void QubitLayer::applyPauliY(int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -70,7 +71,7 @@ void QubitLayer::applyPauliY(int target)
 
 void QubitLayer::applyPauliZ(int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -86,7 +87,7 @@ void QubitLayer::applyPauliZ(int target)
 void QubitLayer::applyHadamard(int target)
 {
     // map |1> to -hadamardCoef*|1> and |0> to hadamardCoef*|0>
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -106,7 +107,7 @@ void QubitLayer::applyRx(int target, precision theta)
     precision cosTheta = cos(theta / 2);
     precision sinTheta = sin(theta / 2);
     // map |0> to cosTheta*|0> and |1> to cosTheta*|1>
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             parity ? qOdd_[i] += cosTheta * qEven_[i] : qEven_[i] += cosTheta * qOdd_[i];
@@ -123,7 +124,7 @@ void QubitLayer::applyRy(int target, precision theta)
     precision cosTheta = cos(theta / 2);
     precision sinTheta = sin(theta / 2);
     // map |1> to cosTheta*|1> and |0> to cosTheta*|0>
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             parity ? qOdd_[i] += cosTheta * qEven_[i] : qEven_[i] += cosTheta * qOdd_[i];
@@ -144,7 +145,7 @@ void QubitLayer::applyRz(int target, precision theta)
     // compute the sine and cosine of the rotation angle
     precision cosTheta = cos(theta / 2);
     precision sinTheta = sin(theta / 2);
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -168,7 +169,7 @@ bool QubitLayer::checkControls(int *controls, int numControls, std::bitset<maxQu
 
 void QubitLayer::applyCnot(int control, int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
     {
         if (checkZeroState(i))
         {
@@ -188,7 +189,7 @@ void QubitLayer::applyCnot(int control, int target)
 
 void QubitLayer::applyToffoli(int control1, int control2, int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -206,7 +207,7 @@ void QubitLayer::applyToffoli(int control1, int control2, int target)
 
 void QubitLayer::applyMcnot(int *controls, int numControls, int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -224,7 +225,7 @@ void QubitLayer::applyMcnot(int *controls, int numControls, int target)
 
 void QubitLayer::applyCz(int control, int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -239,7 +240,7 @@ void QubitLayer::applyCz(int control, int target)
 
 void QubitLayer::applyMcphase(int *controls, int numControls, int target)
 {
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
         if (checkZeroState(i))
         {
             std::bitset<maxQubits> state = i;
@@ -258,7 +259,7 @@ qProb QubitLayer::getMaxAmplitude()
     qProb result;
     precision currentProb{0};
     precision previousProb{0};
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
     {
         state = i;
         currentProb = parity ? abs(qEven_[i]) * abs(qEven_[i]) : abs(qOdd_[i]) * abs(qOdd_[i]);
@@ -288,7 +289,7 @@ void QubitLayer::printQubits()
 {
     std::cout << "Amplitude, "
               << "State \n";
-    for (unsigned long long int i = 0; i < numStates; i++)
+    for (unsigned long long int i = 0; i < numStates_; i++)
     {
         std::bitset<maxQubits> binaryRep = i;
         std::string state = binaryRep.to_string();
@@ -307,6 +308,6 @@ qubitLayer *QubitLayer::getQubitLayerOdd()
     return qOdd_;
 }
 
-unsigned long long int QubitLayer::getNumStates() { return numStates; }
+unsigned long long int QubitLayer::getNumStates() { return numStates_; }
 
-unsigned int QubitLayer::getNumQubits() { return numQubits; }
+unsigned int QubitLayer::getNumQubits() { return numQubits_; }
