@@ -205,6 +205,16 @@ private:
     bool checkZeroState(unsigned long long int state);
 
     /**
+     * @brief Updates the target state based on the current parity.
+     *
+     * @param[in] targetIndex The index of the target state.
+     * @param[in] sourceIndex The index of the source state.
+     * @param[in] scalingValue The scaling to be applied on the new value.
+     * @param[in] assignmentOperation If the assignment operation is true then the state is updated with an assignment. Else it is updated with += operation.
+     */
+    void updateState(unsigned long long int targetIndex, unsigned long long int sourceIndex, std::complex<precision> scalingValue, bool assignmentOperation = true);
+
+    /**
      * @brief Updates the QubitLayer based on the parity. If the parity is true then the even
      * layer is reset to 0, else the odd layer is reset to 0. Then the parity is inverted to
      * prepare for the next gate.

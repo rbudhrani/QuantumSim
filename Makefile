@@ -38,12 +38,14 @@ TESTS = $(TESTS_DIR)tests
 # the dependencies
 TARGET_DEPS  	= $(SRC_DIR)definitions.hpp
 QLAYER_DEPS 	= $(SRC_DIR)QubitLayer.hpp
+TANGLRBITSET_DEPS	= $(SRC_DIR)TanglrBitset.hpp
 EXAMPLES_DEPS 	= $(EXAMPLES_DIR)qAlgorithms.hpp
 TIMERS 			= $(BENCHMARKS_DIR)timers.hpp
 TESTS_DEPS 		= $(TESTS_DIR)tests.hpp
 
 # the other source files
 QUBITLAYER 			= $(SRC_DIR)QubitLayer
+TANGLRBITSET		= $(SRC_DIR)TanglrBitset
 EXAMPLES 			= $(EXAMPLES_DIR)qAlgorithms
 SINGLEQGATETIMES 	= $(BENCHMARKS_DIR)singleQGateTimes
 TWOQGATETIMES 		= $(BENCHMARKS_DIR)twoQGateTimes
@@ -51,7 +53,7 @@ THREEQGATETIMES 	= $(BENCHMARKS_DIR)threeQGateTimes
 EPR 				= $(BENCHMARKS_DIR)epr
 
 # list of object files
-objectFiles = $(TARGET).o $(QUBITLAYER).o $(EXAMPLES).o $(SINGLEQGATETIMES).o $(TWOQGATETIMES).o $(THREEQGATETIMES).o $(EPR).o $(TESTS).o
+objectFiles = $(TARGET).o $(QUBITLAYER).o $(TANGLRBITSET).o $(EXAMPLES).o $(SINGLEQGATETIMES).o $(TWOQGATETIMES).o $(THREEQGATETIMES).o $(EPR).o $(TESTS).o
 
 #list of executables
 executables = $(TARGET) $(SINGLEQGATETIMES) $(TWOQGATETIMES) $(THREEQGATETIMES) $(EPR) $(TESTS)
@@ -97,7 +99,7 @@ $(TARGET).o: $(TARGET).cpp $(TARGET_DEPS) $(QLAYER_DEPS)
 	@$(CXX) $(CXXFLAGS) -c $(TARGET).cpp -o $(TARGET).o
 	@printf "%b" "$(GREEN)$(OK_STRING)$(NO_COLOR)\n"
 
-$(QUBITLAYER).o: $(QUBITLAYER).cpp $(TARGET_DEPS) $(QLAYER_DEPS)
+$(QUBITLAYER).o: $(QUBITLAYER).cpp $(TARGET_DEPS) $(QLAYER_DEPS) $(TANGLRBITSET_DEPS)
 	@printf "%b" "$(BLUE)$(COM_STRING) $(NO_COLOR)$(@)                       				"
 	@$(CXX) $(CXXFLAGS) -c $(QUBITLAYER).cpp -o $(QUBITLAYER).o
 	@printf "%b" "$(GREEN)$(OK_STRING)$(NO_COLOR)\n"

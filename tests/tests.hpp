@@ -33,21 +33,21 @@ TesterGate hadamardTester = {
 };
 
 // rotation gates tested with theta=pi
-precision cosPi = cos(pi / 2);
-precision sinPi = sin(pi / 2);
+precision cosHalfPi = cos(pi / 2);
+precision sinHalfPi = sin(pi / 2);
 TesterGate rxTester = {
     .gateName = "Rx      ",
-    .outputState = {zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, {0, -sinPi}, {cosPi, 0}},
+    .outputState = {zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, {0, -sinHalfPi}, {cosHalfPi, 0}},
 };
 
 TesterGate ryTester = {
     .gateName = "Ry      ",
-    .outputState = {zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, {-sinPi, 0}, {cosPi, 0}},
+    .outputState = {zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, {-sinHalfPi, 0}, {cosHalfPi, 0}},
 };
 
 TesterGate rzTester = {
     .gateName = "Rz      ",
-    .outputState = {zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, {cosPi, sinPi}},
+    .outputState = {zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, zeroComplex, {cosHalfPi, sinHalfPi}},
 };
 
 TesterGate cnotTester = {
