@@ -5,6 +5,8 @@
 
 QuantumSim is a simulator for quantum circuits.
 
+This repository has been archived. Please look at my other state vector based quantum simulator [quentangled](https://github.com/rbudhrani/quentangled) and it's Python wrapper [quentangled-py](https://github.com/rbudhrani/quentangled-py).
+
 ## Setting up
 
 Clone the repository
